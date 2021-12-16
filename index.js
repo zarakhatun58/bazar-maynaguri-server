@@ -24,9 +24,10 @@ async function run() {
     const usersCollection = database.collection("users");
     const profileCollection = database.collection("profiles");
 
+    //all edit profile data send to database
     app.post("/profiles", async (req, res) => {
       const profile = req.body;
-      const result = await usersCollection.insertOne(profile);
+      const result = await profileCollection.insertOne(profile);
       res.json(result);
       console.log(result);
     });
@@ -38,6 +39,8 @@ async function run() {
       res.json(profiles);
     });
 
+    //all users data send to database
+
     app.post("/users", async (req, res) => {
       const users = req.body;
       const result = await usersCollection.insertOne(users);
@@ -46,14 +49,11 @@ async function run() {
     });
 
     app.get("/users/:email", async (req, res) => {
-      const email = req.params.email;
+      const email = req.query.email;
       const query = { email: email };
-      const user = await usersCollection.findOne(query);
-      let isAdmin = false;
-      if (user?.role === "admin") {
-        isAdmin = true;
-      }
-      res.json({ admin: isAdmin });
+      const cursor = usersCollection.find({});
+      const users = await cursor.toArray();
+      res.json(users);
     });
   } finally {
     // await client.close();
